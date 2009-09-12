@@ -34,4 +34,16 @@ class VanadielTime
     @wday = @time / 86400 % 8
     @phase = @time / 604800 % 12
   end
+
+  def to_i
+    @time
+  end
+
+  def +(time)
+    self.class.at(@real_time + time.to_i)
+  end
+
+  def -(time)
+    self.class.at(@real_time - time.to_i)
+  end
 end

@@ -15,7 +15,7 @@ class TC_VanadielTime < Test::Unit::TestCase
     assert_equal(vana_times[7], time.phase, "check phase of #{name}")
   end
 
-  def test_times
+  def test_initialize
     check_vanadiel_time('epoc',
       [ 2001, 12, 31, 15, 0, 0 ],
       [ 886, 1, 1, 0, 0, 0, 0, 0 ])
@@ -37,5 +37,22 @@ class TC_VanadielTime < Test::Unit::TestCase
     check_vanadiel_time('sample4',
       [ 2009, 9, 12, 19, 16, 23 ],
       [ 1081, 4, 15, 10, 49, 35, 0, 11 ])
+  end
+
+  def test_to_i
+    assert_equal(0, VanadielTime.at(Time.utc(2001, 12, 31, 15)).to_i)
+    assert_equal(291600000, VanadielTime.at(Time.utc(2002, 5, 15, 15)).to_i)
+    assert_equal(1017360000, VanadielTime.at(Time.utc(2003, 4, 16, 15)).to_i)
+    assert_equal(2136240000, VanadielTime.at(Time.utc(2004, 9, 15, 15)).to_i)
+    assert_equal(3391200000, VanadielTime.at(Time.utc(2006, 4, 19, 15)).to_i)
+    assert_equal(4646160000, VanadielTime.at(Time.utc(2007, 11, 21, 15)).to_i)
+  end
+
+  def test_calculate
+    time = VanadielTime.now
+    assert_equal(time.to_i + 25, (time + 1).to_i)
+    assert_equal(time.to_i - 25, (time - 1).to_i)
+    assert_equal(time.to_i + 1500, (time + 60).to_i)
+    assert_equal(time.to_i - 1500, (time - 60).to_i)
   end
 end
