@@ -55,4 +55,46 @@ class TC_VanadielTime < Test::Unit::TestCase
     assert_equal(time.to_i + 1500, (time + 60).to_i)
     assert_equal(time.to_i - 1500, (time - 60).to_i)
   end
+
+  def test_next_day
+    time = VanadielTime.at_vanadiel(38127)
+    assert_equal(886, time.year)
+    assert_equal(1, time.month)
+    assert_equal(1, time.day)
+    assert_equal(10, time.hour)
+    assert_equal(35, time.min)
+    assert_equal(27, time.sec)
+    assert_equal(0, time.wday)
+    assert_equal(0, time.phase)
+    next_time = time.next_day
+    assert_equal(886, next_time.year)
+    assert_equal(1, next_time.month)
+    assert_equal(2, next_time.day)
+    assert_equal(0, next_time.hour)
+    assert_equal(0, next_time.min)
+    assert_equal(0, next_time.sec)
+    assert_equal(1, next_time.wday)
+    assert_equal(0, next_time.phase)
+  end
+
+  def test_next_phase
+    time = VanadielTime.at_vanadiel(5032874329)
+    assert_equal(1047, time.year)
+    assert_equal(10, time.month)
+    assert_equal(21, time.day)
+    assert_equal(20, time.hour)
+    assert_equal(38, time.min)
+    assert_equal(49, time.sec)
+    assert_equal(2, time.wday)
+    assert_equal(5, time.phase)
+    next_time = time.next_phase
+    assert_equal(1047, next_time.year)
+    assert_equal(10, next_time.month)
+    assert_equal(25, next_time.day)
+    assert_equal(0, next_time.hour)
+    assert_equal(0, next_time.min)
+    assert_equal(0, next_time.sec)
+    assert_equal(6, next_time.wday)
+    assert_equal(6, next_time.phase)
+  end
 end
