@@ -3,6 +3,21 @@ require 'test/unit'
 require 'vanadiel_time'
 
 class TC_VanadielTime < Test::Unit::TestCase
+  def test_constants
+    assert_equal(Time.utc(2001, 12, 31, 15).to_i, VanadielTime::EPOC_TIME)
+    assert_equal(886, VanadielTime::EPOC_YEAR)
+    assert_equal(1, VanadielTime::EPOC_MONTH)
+    assert_equal(1, VanadielTime::EPOC_DAY)
+    assert_equal(60*60*24*30*12, VanadielTime::SEC_YEAR)
+    assert_equal(60*60*24*30, VanadielTime::SEC_MONTH)
+    assert_equal(60*60*24*7, VanadielTime::SEC_PHASE)
+    assert_equal(60*60*24, VanadielTime::SEC_DAY)
+    assert_equal(60*60*24*30*12/25, VanadielTime::REAL_SEC_YEAR)
+    assert_equal(60*60*24*30/25, VanadielTime::REAL_SEC_MONTH)
+    assert_equal(60*60*24*7/25, VanadielTime::REAL_SEC_PHASE)
+    assert_equal(60*60*24/25, VanadielTime::REAL_SEC_DAY)
+  end
+
   def check_vanadiel_time(name, real_times, vana_times)
     time = VanadielTime.at(Time.utc(*real_times))
     assert_equal(vana_times[0], time.year, "check year of #{name}")
@@ -48,12 +63,39 @@ class TC_VanadielTime < Test::Unit::TestCase
     assert_equal(4646160000, VanadielTime.at(Time.utc(2007, 11, 21, 15)).to_i)
   end
 
+  def test_to_s
+    assert_equal('886-01-01 00:00:00', VanadielTime.at(Time.utc(2001, 12, 31, 15)).to_s)
+    assert_equal('895-05-16 00:00:00', VanadielTime.at(Time.utc(2002, 5, 15, 15)).to_s)
+    assert_equal('918-09-16 00:00:00', VanadielTime.at(Time.utc(2003, 4, 16, 15)).to_s)
+    assert_equal('954-09-06 00:00:00', VanadielTime.at(Time.utc(2004, 9, 15, 15)).to_s)
+    assert_equal('995-01-11 00:00:00', VanadielTime.at(Time.utc(2006, 4, 19, 15)).to_s)
+    assert_equal('1035-05-16 00:00:00', VanadielTime.at(Time.utc(2007, 11, 21, 15)).to_s)
+    assert_equal('1081-04-29 07:09:10', VanadielTime.at_vanadiel(6075500950).to_s)
+  end
+
+  def test_compare
+    t = Time.now
+    vt = VanadielTime.at(t)
+    assert(vt == t.to_i)
+    assert(vt == t)
+    assert(vt == VanadielTime.at(t.to_i))
+    assert(vt == VanadielTime.at_vanadiel(vt.to_i))
+    assert(vt != t - 1)
+    assert(vt != t + 1)
+    assert(vt == t + 1 - 1)
+    assert(vt != vt - 1)
+    assert(vt != vt + 1)
+    assert(vt == vt + 1 - 1)
+  end
+
   def test_calculate
     time = VanadielTime.now
     assert_equal(time.to_i + 25, (time + 1).to_i)
     assert_equal(time.to_i - 25, (time - 1).to_i)
     assert_equal(time.to_i + 1500, (time + 60).to_i)
     assert_equal(time.to_i - 1500, (time - 60).to_i)
+    assert_equal(VanadielTime::REAL_SEC_DAY, time.next_day.next_day - time.next_day)
+    assert_equal(VanadielTime::REAL_SEC_PHASE, time.next_phase.next_phase - time.next_phase)
   end
 
   def test_next_day
